@@ -1,0 +1,130 @@
+# 📊  Customer Churn Prediction(ML)
+
+## 🚀 Project Overview
+This project is an **Customer Churn Prediction System**, designed to predict whether a customer is likely to churn based on various features. It consists of:
+
+- **Flask API** for handling predictions and model serving.
+- **Streamlit UI** (designed with OpenAI) for an interactive user interface.
+- **Docker** for containerization.
+- **AWS ECS (Fargate)** for scalable cloud deployment.
+
+## 🌟 Features
+✅ **Machine Learning Model** (XGBoost) for high-accuracy churn prediction.  
+✅ **User-Friendly Streamlit UI** for easy CSV upload and batch prediction.  
+✅ **REST API with Flask** for seamless backend integration.  
+✅ **Deployed on AWS ECS (Fargate)** with auto-scaling enabled.  
+✅ **Scalable & Cost-Efficient** with auto-scaling from 0-2 tasks.  
+
+---
+
+## 📁 Project Structure
+```
+.
+├── app.py                  # Streamlit UI (designed with OpenAI)
+├── main.py                 # Flask API
+├── customer_churn_model.json # Trained XGBoost Model
+├── scaler.pkl              # Scaler for input normalization
+├── requirements.txt        # Required Python packages
+├── Dockerfile              # Containerization setup
+├── task-definition.json    # AWS ECS Task Definition
+├── README.md               # Project Documentation
+```
+
+---
+
+## 🛠 Installation & Setup
+### **1️⃣ Clone the Repository**
+```bash
+git clone https://github.com/your-username/churn-prediction.git
+cd churn-prediction
+```
+
+### **2️⃣ Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+### **3️⃣ Run Flask API Locally**
+```bash
+python main.py
+```
+The Flask API will be available at **`http://127.0.0.1:5000/`**
+
+### **4️⃣ Run Streamlit UI Locally**
+```bash
+streamlit run app.py
+```
+The UI will be available at **`http://127.0.0.1:8501/`**
+
+---
+
+## 🐳 Running with Docker
+### **1️⃣ Build the Docker Image**
+```bash
+docker build -t churn-prediction .
+```
+
+### **2️⃣ Run the Container**
+```bash
+docker run -p 5000:5000 -p 8501:8501 churn-prediction
+```
+Now, access the UI at **`http://127.0.0.1:8501/`** and the API at **`http://127.0.0.1:5000/`**
+
+---
+
+## ☁️ Deploying on AWS ECS (Fargate)
+### **1️⃣ Push Image to AWS ECR**
+```bash
+aws ecr create-repository --repository-name churn-prediction
+$(aws ecr get-login-password --region ap-south-1) | docker login --username AWS --password-stdin <your-ecr-url>
+docker tag churn-prediction <your-ecr-url>:latest
+docker push <your-ecr-url>:latest
+```
+
+### **2️⃣ Create & Deploy ECS Service**
+```bash
+aws ecs create-cluster --cluster-name churn-prediction-cluster
+aws ecs register-task-definition --cli-input-json file://task-definition.json
+aws ecs create-service --cluster churn-prediction-cluster --service-name churn-prediction-service \
+  --task-definition churn-prediction-task --launch-type FARGATE --desired-count 1 \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-id],securityGroups=[sg-id],assignPublicIp=ENABLED}"
+```
+
+### **3️⃣ Access Deployed Application**
+Find the **Public IP** of your ECS instance:
+```bash
+aws ec2 describe-network-interfaces --network-interface-ids eni-xxxxxxxxxx --query "NetworkInterfaces[0].Association.PublicIp" --output text
+```
+Now, access:
+- **Flask API:** `http://<public-ip>:5000/`
+- **Streamlit UI:** `http://<public-ip>:8501/`
+
+---
+
+## ⚡ Auto-Scaling Setup (Cost-Effective)
+To prevent unnecessary charges, enable **Auto-Scaling** in AWS ECS:
+1️⃣ Go to **AWS ECS Console** → **Clusters** → `churn-prediction-cluster`
+2️⃣ Click on **Auto-Scaling**
+3️⃣ Set **Minimum tasks = 0** (Stops when idle)
+4️⃣ Set **Maximum tasks = 1-2** (Starts when accessed)
+
+---
+
+## 💡 Usage Guide
+1️⃣ **Upload a CSV file** with customer details in the Streamlit UI.
+2️⃣ Click **Predict Churn** to get AI-based predictions.
+3️⃣ The results will be displayed in a **futuristic floating UI**.
+
+---
+
+## 🏆 Tech Stack
+- **Machine Learning:** XGBoost
+- **Backend:** Flask REST API
+- **Frontend:** Streamlit (UI Designed with OpenAI)
+- **Containerization:** Docker
+- **Cloud Deployment:** AWS ECS (Fargate)
+
+---
+
+## 🤖 Credits
+Developed by **Yash Davkhar** 🔍📊 .
